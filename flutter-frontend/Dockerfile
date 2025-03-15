@@ -1,6 +1,10 @@
 FROM cirrusci/flutter:latest AS build
 WORKDIR /app
-COPY . .
+RUN chown -R 1001:1001 /sdks/flutter && \
+    git config --global --add safe.directory /sdks/flutter
+RUN useradd -m -r -u 1001 flutteruser && chown flutteruser:flutteruser /app
+USER flutteruser
+COPY --chown=flutteruser:flutteruser . .
 RUN flutter pub get
 RUN flutter config --enable-web
 RUN flutter build web
