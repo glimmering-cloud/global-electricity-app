@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  flask-backend:
+    build:
+      context: ./flask-backend
+    ports:
+      - "5000:5000"
+    networks:
+      - global-electricity-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  flutter-frontend:
+    build:
+      context: ./flutter-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      flask-backend:
+        condition: service_healthy
+    networks:
+      - global-electricity-network
+
+networks:
+  global-electricity-network:
+    driver: bridge
